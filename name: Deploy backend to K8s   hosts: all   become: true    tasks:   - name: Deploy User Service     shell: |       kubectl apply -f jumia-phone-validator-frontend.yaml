@@ -1,0 +1,8 @@
+ name: Deploy to K8s
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Deploy Phone Validator Frontend
+    shell: |
+      kubectl apply -f jumia-phone-validator-frontend.yaml
