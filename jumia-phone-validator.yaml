@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: validator-backend
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: validator-backend
+---
+apiVersion: jpv/v1
+kind: Deployment
+metadata:
+  name: validator-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validator-backend
+  template:
+    metadata:
+      labels:
+        app: validator-backend
+    spec:
+      containers:
+      - name: validator-backend
+        image: #"validator-backend-image"
+        ports:
+        - containerPort: 8080
+          name: API
+      env:
+       - name: DB_HOST_NAME
+          value: #"IP"
+        - name: DB_USER
+          value: "jumia"
+        - name: DB_PASSWORD
+          value: "1234qwer."
+        - name: DB_NAME
+          value: "jumia_phone_validator"
+        - name: DB_PORT
+          value: "5432"
+
+---
+apiVersion: jpv/v1
+kind: Deployment
+metadata:
+  name: validator-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validator-frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: validator-frontend
+    spec:
+      containers:
+      - name: validator-frontend
+        image: #"validator-frontend-image"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: validator-frontend
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9376
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 9377
+  selector:
+    app: validator-frontend
+
+
