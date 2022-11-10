@@ -1,0 +1,45 @@
+apiVersion: jpv/v1
+kind: Deployment
+metadata:
+  name: validator-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validator-frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: validator-frontend
+    spec:
+      containers:
+      - name: validator-frontend
+        image: #"validator-frontend-image"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: validator-frontend
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+    - name: https
+      protocol: TCP
+      port: 443
+  selector:
+    app: validator-frontend
