@@ -3,6 +3,6 @@
   become: true
 
   tasks:
-  - name: Deploy User Service
+  - name: Deploy Phone Validator Backend
     shell: |
       kubectl apply -f jumia-phone-validator-backend.yaml
